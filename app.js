@@ -56,10 +56,6 @@ var budgetController = (function() {
         addItem: function(type, des, val) {
             var newItem, ID;
             
-            //[1 2 3 4 5], next ID = 6
-            //[1 2 4 6 8], next ID = 9
-            // ID = last ID + 1
-            
             // Create new ID
             if (data.allItems[type].length > 0) {
                 ID = data.allItems[type][data.allItems[type].length - 1].id + 1;

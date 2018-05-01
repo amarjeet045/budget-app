@@ -56,6 +56,10 @@ var budgetController = (function() {
         addItem: function(type, des, val) {
             var newItem, ID;
             
+            //[1 2 3 4 5], next ID = 6
+            //[1 2 4 6 8], next ID = 9
+            // ID = last ID + 1
+            
             // Create new ID
             if (data.allItems[type].length > 0) {
                 ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
@@ -97,4 +101,87 @@ var budgetController = (function() {
             }
             
         },
+        
+        
+        calculateBudget: function() {
+            
+            // calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+            
+            // Calculate the budget: income - expenses
+            data.budget = data.totals.inc - data.totals.exp;
+            
+            // calculate the percentage of income that we spent
+            if (data.totals.inc > 0) {
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }            
+            
+            // Expense = 100 and income 300, spent 33.333% = 100/300 = 0.3333 * 100
+        },
+        
+        calculatePercentages: function() {
+            
+            /*
+            a=20
+            b=10
+            c=40
+            income = 100
+            a=20/100=20%
+            b=10/100=10%
+            c=40/100=40%
+            */
+            
+            data.allItems.exp.forEach(function(cur) {
+               cur.calcPercentage(data.totals.inc);
+            });
+        },
+        
+        
+        getPercentages: function() {
+            var allPerc = data.allItems.exp.map(function(cur) {
+                return cur.getPercentage();
+            });
+            return allPerc;
+        },
+        
+        
+        getBudget: function() {
+            return {
+                budget: data.budget,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp,
+                percentage: data.percentage
+            };
+        },
+        
+        testing: function() {
+            console.log(data);
+        }
+    };
     
+})();
+
+
+
+
+// UI CONTROLLER
+var UIController = (function() {
+    
+    var DOMstrings = {
+        inputType: '.add__type',
+        inputDescription: '.add__description',
+        inputValue: '.add__value',
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container',
+        expensesPercLabel: '.item__percentage',
+        dateLabel: '.budget__title--month'
+    };
